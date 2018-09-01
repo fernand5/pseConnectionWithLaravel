@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Laravel 5.6 CRUD Tutorial With Example </title>
+    <title>PlaceToPay PSE connection</title>
     <link rel="stylesheet" href="{{asset('css/app.css')}}">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.css"
@@ -24,16 +24,18 @@
                     <p class="alert {{ Session::get('alert-class', 'alert-info') }}">{{ Session::get('message') }}</p>
                 @endif
                 @csrf
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+
                 <div class="row">
                     <div class="form-group col-md-6">
                         <label for="Name">Nombre:</label>
-                        <input type="text" class="form-control" name="firstName" required>
+                        <input type="text" class="form-control" name="firstName" value="{!! old('firstName') !!}" required>
                     </div>
                 </div>
                 <div class="row">
                     <div class="form-group col-md-6">
                         <label for="Name">Apellido:</label>
-                        <input type="text" class="form-control" name="lastName" >
+                        <input type="text" class="form-control" name="lastName" value="{!! old('lastName') !!}">
                     </div>
                 </div>
                 <div class="row">
@@ -59,7 +61,7 @@
                             <option value="NIT">Número de identificación tributaria</option>
                             <option value="SSN">Social Security Number</option>
                         </select>
-                        <input type="text" class="form-control" name="document" >
+                        <input type="text" class="form-control" name="document">
                     </div>
                 </div>
 
@@ -74,6 +76,15 @@
                     <div class="form-group col-md-6">
                         <label for="Number">Telefono:</label>
                         <input type="number" class="form-control" name="phone">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <lable>Tipo de transaccion:</lable>
+                        <select name="transactionType">
+                            <option value=0>Normal</option>
+                            <option value=1>Multi Creadito</option>
+                        </select>
                     </div>
                 </div>
                 <div class="row">
@@ -99,6 +110,14 @@
                         @else
                             {{$banks}}
                         @endif
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="Name">Monto a Pagar:</label>
+                        <input type="text" class="form-control" value="5000" name="" disabled>
                     </div>
                 </div>
                 <div class="row">
@@ -141,10 +160,7 @@
     </div>
 
 
-
-
 </div>
-
 
 </body>
 </html>

@@ -58,12 +58,12 @@ class PSE extends Model
     /**
      * @return transaction
      */
-    public function createTransaction($valuesPerson, $ip, $person)
+    public function createTransaction($bank, $bankInterface, $ip, $person)
     {
 
         $transactionRequest = new PSETransactionRequest(
-            $valuesPerson->bank,
-            $valuesPerson->bankInterface,
+            $bank,
+            $bankInterface,
             'http://localhost:8000/transaction/create',
             '123456',
             'testing',
@@ -86,6 +86,54 @@ class PSE extends Model
             // web service input params
             $auth = new Authentication(env('LOGIN_PSE'), env('TRANSKEY'));
             return $client->createTransaction(array('auth'=>$auth,'transaction'=>$transactionRequest));
+        }
+        catch (\SoapFault $e) {
+            return $e->getMessage();
+        }
+
+    }
+
+    /**
+     * @return transaction
+     */
+    public function createTransactionMultiCreadit($bank, $bankInterface, $ip, $person)
+    {
+        $concept = new CreditConcept();
+        $concept->entityCode='entity_1052';
+        $concept->serviceCode='service_1234';
+        $concept->amountValue=5000;
+        $concept->taxValue=0.0;
+        $concept->description='description';
+
+        $arrayCredits = new ArrayOfCreditconcept();
+        $arrayCredits->addItem($concept);
+
+        $transactionRequest = new PSETransactionMultiCreditRequest(
+            $bank,
+            $bankInterface,
+            'http://localhost:8000/transaction/create',
+            '123456',
+            'testing',
+            'es',
+            'COP',
+            5000,
+            0,
+            0,
+            0,
+            $person,
+            $person,
+            $person,
+            $ip,
+            'test',
+            [],
+            array($concept)
+        );
+
+        try {
+            $client = new \SoapClient(env('WSDL'), array('exceptions' => true));  // The trace param will show you errors stack
+            // web service input params
+            $auth = new Authentication(env('LOGIN_PSE'), env('TRANSKEY'));
+            return $client->createTransactionMultiCredit(array('auth'=>$auth,'transaction'=>$transactionRequest));
         }
         catch (\SoapFault $e) {
             return $e->getMessage();

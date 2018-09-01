@@ -58,26 +58,59 @@ class TransactionController extends Controller
 
         $person = Person::updateOrCreate(['emailAddress' => $request->emailAddress], $request->all());
 
+        if ($request->transactionType == 0){
+            $transaction = $pse->createTransaction(
+                $request->bank,
+                $request->bankInterface,
+                request()->ip(),
+                $person
+            );
+        }else{
+            $transaction = $pse->createTransactionMultiCreadit(
+                $request->bank,
+                $request->bankInterface,
+                request()->ip(),
+                $person
+            );
+        }
 
-        $transaction = $pse->createTransaction(
-            $request,
-            request()->ip(),
-            $person
-        );
-
-        if (isset($transaction->createTransactionResult) && $transaction->createTransactionResult->returnCode == 'SUCCESS') {
-
-            //JOB for monitor after 7 minutes
-            GetTransactionInformation::dispatch($transaction->createTransactionResult->transactionID)
-            ->delay(now()->addMinutes(1));
-
+        if (isset($transaction->createTransactionResult)) {
             //Save response information
             $pseTransactionResponse = new PSETransactionResponse();
             $pseTransactionResponse->fill((array)$transaction->createTransactionResult);
             $pseTransactionResponse->userId = $person->id;
             $pseTransactionResponse->save();
 
-            return redirect()->to($transaction->createTransactionResult->bankURL);
+            if ($transaction->createTransactionResult->returnCode == 'SUCCESS'){
+                //JOB for monitor after 7 minutes
+                GetTransactionInformation::dispatch($transaction->createTransactionResult->transactionID)
+                    ->delay(now()->addMinutes(1));
+
+                return redirect()->to($transaction->createTransactionResult->bankURL);
+            } else {
+                Session::flash('message', $transaction->createTransactionResult->responseReasonText);
+                Session::flash('alert-class', 'alert-danger');
+                return redirect()->to('transaction/create');
+            }
+
+        } else if (isset($transaction->createTransactionMultiCreditResult)){
+            //Save response information
+            $pseTransactionResponse = new PSETransactionResponse();
+            $pseTransactionResponse->fill((array)$transaction->createTransactionMultiCreditResult);
+            $pseTransactionResponse->userId = $person->id;
+            $pseTransactionResponse->save();
+
+            if ($transaction->createTransactionMultiCreditResult->returnCode == 'SUCCESS'){
+                //JOB for monitor after 7 minutes
+                GetTransactionInformation::dispatch($transaction->createTransactionMultiCreditResult->transactionID)
+                    ->delay(now()->addMinutes(1));
+
+                return redirect()->to($transaction->createTransactionMultiCreditResult->bankURL);
+            } else {
+                Session::flash('message', $transaction->createTransactionMultiCreditResult->responseReasonText);
+                Session::flash('alert-class', 'alert-danger');
+                return redirect()->to('transaction/create');
+            }
         } else if (!is_array($transaction)) {
             Session::flash('message', $transaction);
             Session::flash('alert-class', 'alert-danger');

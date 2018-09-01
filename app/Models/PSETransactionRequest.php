@@ -114,7 +114,7 @@ class PSETransactionRequest extends Model
         $this->tipAmount = $tipAmount;
         $this->payer = $payer;
         $this->buyer = $buyer;
-        $this->shipping = $shipping;
+        $this->shippingz = $shipping;
         $this->ipAddress = $ipAddress;
         $this->userAgent = $userAgent;
         $this->additionalData = $additionalData;
