@@ -12,3 +12,7 @@
 */
 
 Route::resource('transaction','TransactionController');
+
+Route::get('{any}', function() {
+    return Redirect::to('transaction/create');
+})->where('any', '.*');
