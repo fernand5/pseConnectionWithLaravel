@@ -84,7 +84,7 @@ class TransactionController extends Controller
             if ($transaction->createTransactionResult->returnCode == 'SUCCESS'){
                 //JOB for monitor after 7 minutes
                 GetTransactionInformation::dispatch($transaction->createTransactionResult->transactionID)
-                    ->delay(now()->addMinutes(1));
+                    ->delay(now()->addMinutes(7));
 
                 return redirect()->to($transaction->createTransactionResult->bankURL);
             } else {

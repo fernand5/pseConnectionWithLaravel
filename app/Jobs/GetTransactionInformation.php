@@ -42,7 +42,7 @@ class GetTransactionInformation implements ShouldQueue
 
         if ($transactionInformation->responseCode == 3){
             GetTransactionInformation::dispatch($transactionInformation->transactionID)
-                ->delay(now()->addMinutes(2));
+                ->delay(now()->addMinutes(10));
             Log::debug('Still pending');
         }
         Log::debug('Job passed');

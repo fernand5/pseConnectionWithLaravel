@@ -14,7 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
 </head>
 <body>
-<div class="container">
+<div class="col-md-12">
     <div class="row">
         <div class="col-md-6">
             <h2>Pasarela de pago PSE</h2><br/>
@@ -117,7 +117,7 @@
                 <div class="row">
                     <div class="form-group col-md-6">
                         <label for="Name">Monto a Pagar:</label>
-                        <input type="text" class="form-control" value="5000" name="" disabled>
+                        <input type="text" class="form-control" value="5100" name="" disabled>
                     </div>
                 </div>
                 <div class="row">
